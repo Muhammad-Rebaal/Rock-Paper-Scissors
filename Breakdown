@@ -1,0 +1,142 @@
+import { useState } from "react"; // React mein state ko istemal karne ke liye.
+import "./App.css"; // Code ki dikhai dene wali tareekon ko sajane ke liye.
+import { FaHandRock, FaHandPaper, FaHandScissors } from "react-icons/fa"; // Icons dikhane ke liye.
+
+// Different actions aur unke liye kya result hai.
+const actions = {
+  rock: "scissors", // Rock beats scissors.
+  paper: "scissors", // Paper beats scissors.
+  scissors: "rock", // Scissors beats rock.
+};
+
+// Computer ke liye ek random action chunne mein madad.
+function randomAction() {
+  const keys = Object.keys(actions);
+  const index = Math.floor(Math.random() * keys.length);
+
+  return keys[index];
+}
+
+// Icons dikhane ke liye.
+function ActionIcon({ action, ...props }) {
+  const icons = {
+    rock: FaHandRock, // Rock icon.
+    paper: FaHandPaper, // Paper icon.
+    scissors: FaHandScissors, // Scissors icon.
+  };
+  const Icon = icons[action];
+  return <Icon {...props} />;
+}
+
+// Khiladiyon ki maloomat dikhane ke liye.
+function Player({ name = "Player", score = 0, action = "rock" }) {
+  return (
+    <div className="player">
+      <div className="score">{`${name}: ${score}`}</div>
+      <div className="centericon">
+        <div className="action">
+          {action && <ActionIcon size={100} action={action} />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Rock, paper aur scissors ke liye buttons dikhane ke liye.
+function Actionbutton({ action = "rock", onSelect }) {
+  return (
+    <button className="round-btn" onClick={() => onSelect(action)}>
+      <ActionIcon action={action} />
+    </button>
+  );
+}
+
+// Game ka main hissa.
+function App() {
+  // Game ki halat ko janne ke liye.
+  const [playerAction, setPlayerAction] = useState("rock");
+  const [ComputerAction, setComputerAction] = useState("rock");
+  const [playerScore, setPlayerScore] = useState(0);
+  const [computerScore, setComputerScore] = useState(0);
+  const [winner, setWinner] = useState(0);
+
+  // Action chunne aur score update karne ke liye.
+  const handleActionSelect = (selectedAction) => {
+    const newComputerAction = randomAction();
+    setPlayerAction(selectedAction);
+    setComputerAction(newComputerAction);
+
+    const newWinner = calculateWinner(selectedAction, newComputerAction);
+    setWinner(newWinner);
+    if (newWinner === -1) {
+      setPlayerScore(playerScore + 1);
+    } else if (newWinner === 1) {
+      setComputerScore(computerScore + 1);
+    }
+  };
+
+  // Jeetne wala decide karne ke liye.
+  function calculateWinner(action1, action2) {
+    if (action1 === action2) {
+      return 0; // Barabari hai.
+    } else if (actions[action1] === action2) {
+      return -1; // Khiladi jeet gaya.
+    } else if (actions[action2] === action1) {
+      return 1; // Computer jeet gaya.
+    }
+    return null; // Kuch gadbad hai.
+  }
+
+  // Jeetne wale ko dikhane ke liye.
+  function ShowWinner({ winner = 0 }) {
+    const text = {
+      "-1": "Khiladi Jeet Gaya!",
+      0: "Barabari Hai",
+      1: "Computer Jeet Gaya!",
+    };
+    return <h2>{text[winner]}</h2>;
+  }
+
+  // Game ka shuruaat.
+  return (
+    <>
+      <div className="center">
+        <h1>Rock Paper Scissors</h1>
+        <div className="container">
+          <Player name={"Khiladi"} score={playerScore} action={playerAction} />
+          <Player name={"Computer"} score={computerScore} action={ComputerAction} />
+        </div>
+        <Actionbutton action="rock" onSelect={handleActionSelect} />
+        <Actionbutton action="paper" onSelect={handleActionSelect} />
+        <Actionbutton action="scissors" onSelect={handleActionSelect} />
+        <div>
+          <ShowWinner winner={winner} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Game tayyar.
+export default App;
+Actions: In the game, there are three things you can pick: "rock", "paper", and "scissors".
+
+Random Computer Choice: The computer also picks one of these actions randomly.
+
+Icons: Each action has an icon: rock looks like a rock, paper looks like a piece of paper, and scissors looks like a pair of scissors.
+
+Players: There are two players, you (Player) and the computer (Computer). You both start with a score of 0.
+
+Buttons: You have three buttons to pick your action: rock, paper, or scissors.
+
+Playing: When you click a button, you choose an action. The computer also chooses an action at random.
+
+Winner: The game decides the winner: if your action beats the computer's action, you win a point. If the computer's action beats yours, it wins a point. If you both pick the same action, it's a tie.
+
+Showing the Winner: The game shows you the result. It says "You Win" if you win, "You Lose!" if the computer wins, and "It's a Tie" if it's a tie.
+
+Score: Your score goes up if you win, and the computer's score goes up if it wins. The game keeps track of how many times you and the computer win.
+
+Using Components: The code uses different parts to make the game work. It has components for showing the actions and the scores. When you click a button, it updates the game to show the new actions and score.
+
+Remember, the goal of the game is to have more points by making smart choices between rock, paper, and scissors. Good luck! 🎮👍
